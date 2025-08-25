@@ -1,70 +1,113 @@
 "use client";
 
 import { useState } from "react";
-import { io } from "socket.io-client";
+import { useRouter } from "next/navigation";
 
-const socket = io("http://localhost:4200"); // backend хаяг
+import { ExcuseBackground } from "@/app/(game)/excuseSection/components/ExcuseBackground";
 
-export default function CreateRoomForm() {
+interface CreateRoomFormProps {
+  onRoomCreated?: (room: {
+    roomName: string;
+    roomCode: string;
+    roomId: number;
+  }) => void;
+}
 
+export default function CreateRoom({ onRoomCreated }: CreateRoomFormProps) {
+  const router = useRouter();
+
+  // State-ууд
   const [roomName, setRoomName] = useState("");
-  const [playerName, setPlayerName] = useState("");
-  const [players, setPlayers] = useState<string[]>([]);
-  const [host, setHost] = useState<string | null>(null);
+  const [hostNickname, setHostNickname] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // create room
-  const handleCreateRoom = () => {
-    socket.emit("createRoom", { roomName, playerName });
+  const handleCreateRoom = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("http://localhost:4200/room", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomName, hostNickname }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Өрөө үүсгэхэд алдаа гарлаа");
+      }
+
+      if (onRoomCreated) {
+        onRoomCreated({
+          roomName: data.roomName,
+          roomCode: data.roomCode,
+          roomId: data.roomId,
+        });
+      }
+
+     
+      router.push(`/lobby?roomId=${data.roomId}&playerId=${data.roomCode}`);
+      // router.push(`/room/${data.roomCode}`);
+    } catch (err: any) {
+      setErrorMessage(err.message || "Алдаа гарлаа");
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  // join room
-  const handleJoinRoom = () => {
-    socket.emit("joinRoom", {  playerName });
-  };
-
-  // listen for room updates
-  socket.on("roomData", (data) => {
-    setPlayers(data.players);
-    setHost(data.host);
-  });
 
   return (
-    <div className="flex flex-col gap-4 p-6 max-w-md mx-auto">
-      <h2 className="text-xl font-bold">🎮 Create / Join Room</h2>
-
-    
-
-      <input
-        type="text"
-        placeholder="Room Name"
-        value={roomName}
-        onChange={(e) => setRoomName(e.target.value)}
-        className="border p-2 rounded"
-      />
-
-      <input
-        type="text"
-        placeholder="Your Name"
-        value={playerName}
-        onChange={(e) => setPlayerName(e.target.value)}
-        className="border p-2 rounded"
-      />
-
-      <button
-        onClick={handleCreateRoom}
-        className="bg-green-500 text-white py-2 rounded hover:bg-green-600"
+    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative">
+      <ExcuseBackground />
+      <form
+        className="bg-white p-8 w-full max-w-md rounded-xl shadow-lg"
+        onSubmit={handleCreateRoom}
       >
-        Create Room
-      </button>
+        <div className="items-center text-center mb-8">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-green-300 mb-2 sm:mb-4 drop-shadow-2xl transform -rotate-2">
+            Өрөө
+          </h1>
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black text-yellow-400 mb-2 drop-shadow-2xl transform rotate-1">
+            Үүсгэх
+          </h1>
+        </div>
 
-      {/* <button
-        onClick={handleJoinRoom}
-        className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-      >
-        Join Room
-      </button> */}
+        <input
+          type="text"
+          placeholder="Өрөөний нэр"
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+          className="w-full mb-4 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
 
-  
+        <input
+          type="text"
+          placeholder="Нэрээ оруулна уу (Host)"
+          value={hostNickname}
+          onChange={(e) => setHostNickname(e.target.value)}
+          className="w-full mb-6 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors mb-6 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? "Үүсгэж байна..." : "Өрөө Үүсгэх"}
+        </button>
+
+        {errorMessage && (
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-4"
+            role="alert"
+          >
+            <strong className="font-bold">Алдаа гарлаа! </strong>
+            <span className="block sm:inline">{errorMessage}</span>
+          </div>
+        )}
+      </form>
     </div>
   );
 }

@@ -64,7 +64,7 @@ export default function RaceGame() {
 
     console.log('Connecting to runner game with:', { roomCode, nickname });
 
-    const socket = io('http://localhost:3000', {
+    const socket = io('http://localhost:4200', {
       path: '/api/socket',
       transports: ['polling', 'websocket'],
       upgrade: true,
