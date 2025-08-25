@@ -88,18 +88,18 @@ export const fetchRoomData = async (roomCode: string) => {
   }
 };
 
-export const pollRoomData = (roomCode: string, callback: (room: Room) => void, ) => {
-  const id = setInterval(async () => {
-    try {
-      const data = await fetchRoomData(roomCode);
-      if (data?.room) callback(data.room);
-    } catch (e) {
-      console.error("Polling error:", e);
-    }
-  } );
+// export const pollRoomData = (roomCode: string, callback: (room: Room) => void, ) => {
+//   const id = setInterval(async () => {
+//     try {
+//       const data = await fetchRoomData(roomCode);
+//       if (data?.room) callback(data.room);
+//     } catch (e) {
+//       console.error("Polling error:", e);
+//     }
+//   } );
 
-  return () => clearInterval(id);
-};
+//   return () => clearInterval(id);
+// };
 
 
 const roomApi = {
@@ -157,18 +157,18 @@ const roomApi = {
     return res.json();
   },
 
-  pollRoomData: (roomCode: string, callback: (room: Room) => void, interval = 3000) => {
-    const id = setInterval(async () => {
-      try {
-        const data = await roomApi.fetchRoomData(roomCode);
-        if (data?.room) callback(data.room);
-      } catch (e) {
-        console.error("Polling error:", e);
-      }
-    }, interval);
+  // pollRoomData: (roomCode: string) => {
+  //   const id = setInterval(async () => {
+  //     try {
+  //       const data = await roomApi.fetchRoomData(roomCode);
+  //       if (data?.room);
+  //     } catch (e) {
+  //       console.error("Polling error:", e);
+  //     }
+  //   }, );
 
-    return () => clearInterval(id);
-  },
+  //   return () => clearInterval(id);
+  // },
 };
 
 export default roomApi;
