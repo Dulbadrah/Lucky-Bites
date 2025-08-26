@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-import { ExcuseBackground } from "@/app/(game)/excuseSection/components/ExcuseBackground";
+import { ExcuseBackground } from "./ExcuseBackground";
 
 interface CreateRoomFormProps {
   onRoomCreated?: (room: {
@@ -16,7 +15,6 @@ interface CreateRoomFormProps {
 export default function CreateRoom({ onRoomCreated }: CreateRoomFormProps) {
   const router = useRouter();
 
-  // State-ууд
   const [roomName, setRoomName] = useState("");
   const [hostNickname, setHostNickname] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -48,9 +46,7 @@ export default function CreateRoom({ onRoomCreated }: CreateRoomFormProps) {
         });
       }
 
-     
       router.push(`/lobby?roomId=${data.roomId}&playerId=${data.roomCode}`);
-      // router.push(`/room/${data.roomCode}`);
     } catch (err: any) {
       setErrorMessage(err.message || "Алдаа гарлаа");
     } finally {
@@ -59,10 +55,10 @@ export default function CreateRoom({ onRoomCreated }: CreateRoomFormProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative">
+    <div className="min-h-1/2 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden">
       <ExcuseBackground />
       <form
-        className="bg-white p-8 w-full max-w-md rounded-xl shadow-lg"
+        className="bg-white p-8 w-full max-w-md rounded-xl shadow-lg relative z-10"
         onSubmit={handleCreateRoom}
       >
         <div className="items-center text-center mb-8">

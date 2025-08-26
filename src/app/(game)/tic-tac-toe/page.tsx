@@ -10,14 +10,14 @@ type Winner = Player | "tie" | null;
 
 const SIZE = 5;
 
-const socket = io("http://localhost:4200"); // backend серверийн хаяг
+const socket = io("http://localhost:4200");
 
 export default function Page() {
   const [board, setBoard] = useState<Board>(Array(SIZE * SIZE).fill(null));
   const [currentPlayer, setCurrentPlayer] = useState<Player>("X");
   const [winner, setWinner] = useState<Winner>(null);
 
-  const room = "room123"; // жишээ болгож тогтмол код өглөө, чи динамик болгож болно
+  const room = "room123"; 
 
   useEffect(() => {
     socket.emit("joinTicTacToe", room);
