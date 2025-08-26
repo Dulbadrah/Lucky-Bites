@@ -30,12 +30,10 @@ export default function Page() {
 
   return (
     <div className="p-6 max-w-lg mx-auto text-center min-h-screen bg-gradient-to-br from-purple-100 to-blue-100 ">
-      {/* Room code */}
       <div className="mb-6">
         <h2 className="text-3xl font-extrabold tracking-widest text-purple-700 drop-shadow">Room: {roomCode}</h2>
       </div>
 
-      {/* Lobby */}
       {step === "lobby" && (
         <div>
           <h3 className="text-xl font-semibold mb-4 text-gray-700">Тоглогчид</h3>
@@ -57,7 +55,6 @@ export default function Page() {
         </div>
       )}
 
-      {/* Question */}
       {step === "question" && (
         <div>
           <h2 className="text-2xl font-bold text-blue-700 mb-6 animate-pulse">{question}</h2>
@@ -75,7 +72,6 @@ export default function Page() {
         </div>
       )}
 
-     {/* Result */}
 {step === "result" && (
   <div>
     <h2 className="text-2xl font-bold text-green-600 mb-4">Үр дүн</h2>
